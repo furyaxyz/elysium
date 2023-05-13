@@ -1,0 +1,113 @@
+package keeper
+
+import (
+	"context"
+
+	"cosmossdk.io/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/furyaxyz/elysium/v2/x/elysium/types"
+)
+
+type msgServer struct {
+	Keeper
+}
+
+// NewMsgServerImpl returns an implementation of the MsgServer interface
+// for the provided Keeper.
+func NewMsgServerImpl(keeper Keeper) types.MsgServer {
+	return &msgServer{Keeper: keeper}
+}
+
+var _ types.MsgServer = msgServer{}
+
+func (k msgServer) ConvertVouchers(goCtx context.Context, msg *types.MsgConvertVouchers) (*types.MsgConvertVouchersResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	err := k.ConvertVouchersToEvmCoins(ctx, msg.Address, msg.Coins)
+	if err != nil {
+		return nil, err
+	}
+
+	// emit events
+	ctx.EventManager().EmitEvents(sdk.Events{
+		types.NewConvertVouchersEvent(msg.Address, msg.Coins),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+		),
+	},
+	)
+
+	return &types.MsgConvertVouchersResponse{}, nil
+}
+
+func (k msgServer) TransferTokens(goCtx context.Context, msg *types.MsgTransferTokens) (*types.MsgTransferTokensResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	// TODO change the msg to be able to specify the channel id
+	// Only sending non source token is supported at the moment
+	err := k.IbcTransferCoins(ctx, msg.From, msg.To, msg.Coins, "")
+	if err != nil {
+		return nil, err
+	}
+
+	// emit events
+	ctx.EventManager().EmitEvents(sdk.Events{
+		types.NewTransferTokensEvent(msg.From, msg.To, msg.Coins),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+		),
+	},
+	)
+	return &types.MsgTransferTokensResponse{}, nil
+}
+
+// UpdateTokenMapping implements the grpc method
+func (k msgServer) UpdateTokenMapping(goCtx context.Context, msg *types.MsgUpdateTokenMapping) (*types.MsgUpdateTokenMappingResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	// msg is already validated
+	if err := k.Keeper.RegisterOrUpdateTokenMapping(ctx, msg); err != nil {
+		return nil, err
+	}
+	return &types.MsgUpdateTokenMappingResponse{}, nil
+}
+
+// TurnBridge implements the grpc method
+func (k msgServer) TurnBridge(goCtx context.Context, msg *types.MsgTurnBridge) (*types.MsgTurnBridgeResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	gravityParams := k.gravityKeeper.GetParams(ctx)
+	gravityParams.BridgeActive = msg.Enable
+	k.gravityKeeper.SetParams(ctx, gravityParams)
+
+	return &types.MsgTurnBridgeResponse{}, nil
+}
+
+func (k msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+	if msg.Authority != k.authority {
+		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, msg.Authority)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := k.SetParams(ctx, msg.Params); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgUpdateParamsResponse{}, nil
+}
+
+func (k msgServer) UpdatePermissions(goCtx context.Context, msg *types.MsgUpdatePermissions) (*types.MsgUpdatePermissionsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	admin := k.Keeper.GetParams(ctx).ElysiumAdmin
+	// if admin is empty, no sender could be equal to it
+	if admin != msg.From {
+		return nil, errors.Wrap(sdkerrors.ErrInvalidAddress, "msg sender is authorized")
+	}
+	acc, err := sdk.AccAddressFromBech32(msg.Address)
+	if err != nil {
+		return nil, err
+	}
+	k.SetPermissions(ctx, acc, msg.Permissions)
+
+	return &types.MsgUpdatePermissionsResponse{}, nil
+}

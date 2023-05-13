@@ -1,0 +1,155 @@
+local config = import 'default.jsonnet';
+
+config {
+  'elysium_777-1'+: {
+    'account-prefix': 'frc',
+    'coin-type': 60,
+    key_name: 'signer1',
+    accounts: super.accounts[:std.length(super.accounts) - 1] + [super.accounts[std.length(super.accounts) - 1] {
+      coins: super.coins + ',100000000000ibcfee',
+    }],
+    'app-config'+: {
+      'index-events': super['index-events'] + ['message.action'],
+    },
+    genesis+: {
+      app_state+: {
+        feemarket+: {
+          params+: {
+            no_base_fee: true,
+            base_fee: '0',
+          },
+        },
+      },
+    },
+  },
+  'chainmain-1': {
+    cmd: 'chain-maind',
+    'start-flags': '--trace',
+    'account-prefix': 'ely',
+    'app-config': {
+      'minimum-gas-prices': '500baseely',
+    },
+    validators: [
+      {
+        coins: '2234240000000000000ely',
+        staked: '10000000000000ely',
+        mnemonic: '${VALIDATOR1_MNEMONIC}',
+        base_port: 26800,
+      },
+      {
+        coins: '987870000000000000ely',
+        staked: '20000000000000ely',
+        mnemonic: '${VALIDATOR2_MNEMONIC}',
+        base_port: 26810,
+      },
+    ],
+    accounts: [
+      {
+        name: 'community',
+        coins: '10000000000000ely',
+        mnemonic: '${COMMUNITY_MNEMONIC}',
+      },
+      {
+        name: 'relayer',
+        coins: '10000000000000ely',
+        mnemonic: '${SIGNER1_MNEMONIC}',
+      },
+      {
+        name: 'signer2',
+        coins: '10000000000000ely',
+        mnemonic: '${SIGNER2_MNEMONIC}',
+      },
+    ],
+    genesis: {
+      app_state: {
+        staking: {
+          params: {
+            unbonding_time: '1814400s',
+          },
+        },
+        gov: {
+          voting_params: {
+            voting_period: '1814400s',
+          },
+          deposit_params: {
+            max_deposit_period: '1814400s',
+            min_deposit: [
+              {
+                denom: 'baseely',
+                amount: '10000000',
+              },
+            ],
+          },
+        },
+        transfer: {
+          params: {
+            receive_enabled: true,
+            send_enabled: true,
+          },
+        },
+        interchainaccounts: {
+          host_genesis_state: {
+            params: {
+              allow_messages: [
+                '/cosmos.bank.v1beta1.MsgSend',
+              ],
+            },
+          },
+        },
+      },
+    },
+  },
+  relayer: {
+    mode: {
+      clients: {
+        enabled: true,
+        refresh: true,
+        misbehaviour: true,
+      },
+      connections: {
+        enabled: true,
+      },
+      channels: {
+        enabled: true,
+      },
+      packets: {
+        enabled: true,
+        tx_confirmation: true,
+      },
+    },
+    rest: {
+      enabled: true,
+      host: '127.0.0.1',
+      port: 3000,
+    },
+    chains: [
+      {
+        id: 'elysium_777-1',
+        max_gas: 500000,
+        gas_multiplier: 2,
+        address_type: {
+          derivation: 'ethermint',
+          proto_type: {
+            pk_type: '/ethermint.crypto.v1.ethsecp256k1.PubKey',
+          },
+        },
+        gas_price: {
+          price: 10000000000000000,
+          denom: 'basetely',
+        },
+        extension_options: [{
+          type: 'ethermint_dynamic_fee',
+          value: '1000000',
+        }],
+      },
+      {
+        id: 'chainmain-1',
+        max_gas: 500000,
+        gas_price: {
+          price: 1000000,
+          denom: 'baseely',
+        },
+      },
+    ],
+  },
+}

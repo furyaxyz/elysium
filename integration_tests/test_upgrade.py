@@ -1,0 +1,180 @@
+import configparser
+import json
+import re
+import subprocess
+from pathlib import Path
+
+import pytest
+from pystarport import ports
+from pystarport.cluster import SUPERVISOR_CONFIG_FILE
+
+from .network import Elysium, setup_custom_elysium
+from .utils import (
+    ADDRS,
+    CONTRACTS,
+    approve_proposal,
+    deploy_contract,
+    send_transaction,
+    wait_for_block,
+    wait_for_port,
+)
+
+
+def init_cosmovisor(home):
+    """
+    build and setup cosmovisor directory structure in each node's home directory
+    """
+    cosmovisor = home / "cosmovisor"
+    cosmovisor.mkdir()
+    (cosmovisor / "upgrades").symlink_to("../../../upgrades")
+    (cosmovisor / "genesis").symlink_to("./upgrades/genesis")
+
+
+def post_init(path, base_port, config):
+    """
+    prepare cosmovisor for each node
+    """
+    chain_id = "elysium_777-1"
+    cfg = json.loads((path / chain_id / "config.json").read_text())
+    for i, _ in enumerate(cfg["validators"]):
+        home = path / chain_id / f"node{i}"
+        init_cosmovisor(home)
+
+    # patch supervisord ini config
+    ini_path = path / chain_id / SUPERVISOR_CONFIG_FILE
+    ini = configparser.RawConfigParser()
+    ini.read(ini_path)
+    reg = re.compile(rf"^program:{chain_id}-node(\d+)")
+    for section in ini.sections():
+        m = reg.match(section)
+        if m:
+            i = m.group(1)
+            ini[section].update(
+                {
+                    "command": f"cosmovisor start --home %(here)s/node{i}",
+                    "environment": f"DAEMON_NAME=elysiumd,DAEMON_HOME=%(here)s/node{i}",
+                }
+            )
+    with ini_path.open("w") as fp:
+        ini.write(fp)
+
+
+@pytest.fixture(scope="module")
+def custom_elysium(tmp_path_factory):
+    path = tmp_path_factory.mktemp("upgrade")
+    cmd = [
+        "nix-build",
+        Path(__file__).parent / "configs/upgrade-test-package.nix",
+        "-o",
+        path / "upgrades",
+    ]
+    print(*cmd)
+    subprocess.run(cmd, check=True)
+    # init with genesis binary
+    yield from setup_custom_elysium(
+        path,
+        26100,
+        Path(__file__).parent / "configs/cosmovisor.jsonnet",
+        post_init=post_init,
+        chain_binary=str(path / "upgrades/genesis/bin/elysiumd"),
+    )
+
+
+def test_cosmovisor_upgrade(custom_elysium: Elysium):
+    """
+    - propose an upgrade and pass it
+    - wait for it to happen
+    - it should work transparently
+    """
+    cli = custom_elysium.cosmos_cli()
+    height = cli.block_height()
+    target_height = height + 15
+    print("upgrade height", target_height)
+
+    w3 = custom_elysium.w3
+    contract = deploy_contract(w3, CONTRACTS["TestERC20A"])
+    old_height = w3.eth.block_number
+    old_balance = w3.eth.get_balance(ADDRS["validator"], block_identifier=old_height)
+    old_base_fee = w3.eth.get_block(old_height).baseFeePerGas
+    old_erc20_balance = contract.caller(block_identifier=old_height).balanceOf(
+        ADDRS["validator"]
+    )
+    print("old values", old_height, old_balance, old_base_fee)
+
+    plan_name = "v2.0.0-testnet3"
+    rsp = cli.gov_propose_legacy(
+        "community",
+        "software-upgrade",
+        {
+            "name": plan_name,
+            "title": "upgrade test",
+            "description": "ditto",
+            "upgrade-height": target_height,
+            "deposit": "10000basetely",
+        },
+    )
+    assert rsp["code"] == 0, rsp["raw_log"]
+    approve_proposal(custom_elysium, rsp)
+
+    # update cli chain binary
+    custom_elysium.chain_binary = (
+        Path(custom_elysium.chain_binary).parent.parent.parent
+        / f"{plan_name}/bin/elysiumd"
+    )
+    cli = custom_elysium.cosmos_cli()
+
+    # block should pass the target height
+    wait_for_block(cli, target_height + 2, timeout=480)
+    wait_for_port(ports.rpc_port(custom_elysium.base_port(0)))
+
+    # test migrate keystore
+    cli.migrate_keystore()
+
+    # check basic tx works
+    wait_for_port(ports.evmrpc_port(custom_elysium.base_port(0)))
+    receipt = send_transaction(
+        custom_elysium.w3,
+        {
+            "to": ADDRS["community"],
+            "value": 1000,
+            "maxFeePerGas": 1000000000000,
+            "maxPriorityFeePerGas": 10000,
+        },
+    )
+    assert receipt.status == 1
+
+    # query json-rpc on older blocks should success
+    assert old_balance == w3.eth.get_balance(
+        ADDRS["validator"], block_identifier=old_height
+    )
+    assert old_base_fee == w3.eth.get_block(old_height).baseFeePerGas
+
+    # check eth_call works on older blocks
+    assert old_erc20_balance == contract.caller(block_identifier=old_height).balanceOf(
+        ADDRS["validator"]
+    )
+
+    # check gravity params
+    assert cli.query_gravity_params() == {
+        "params": {
+            "gravity_id": "elysium_gravity_testnet",
+            "contract_source_hash": "",
+            "bridge_ethereum_address": "0x0000000000000000000000000000000000000000",
+            "bridge_chain_id": "0",
+            "signed_signer_set_txs_window": "10000",
+            "signed_batches_window": "10000",
+            "ethereum_signatures_window": "10000",
+            "target_eth_tx_timeout": "43200000",
+            "average_block_time": "5000",
+            "average_ethereum_block_time": "15000",
+            "slash_fraction_signer_set_tx": "0.001000000000000000",
+            "slash_fraction_batch": "0.001000000000000000",
+            "slash_fraction_ethereum_signature": "0.001000000000000000",
+            "slash_fraction_conflicting_ethereum_signature": "0.001000000000000000",
+            "unbond_slashing_signer_set_txs_window": "10000",
+            "bridge_active": False,
+            "batch_creation_period": "10",
+            "batch_max_element": "100",
+            "observe_ethereum_height_period": "50",
+        }
+    }

@@ -1,0 +1,111 @@
+{
+    "chain-main": {
+        "branch": "master",
+        "description": "Crypto.org Chain⛓: Elyeseid Testnet and beyond development",
+        "homepage": "https://crypto.org",
+        "owner": "crypto-org-chain",
+        "repo": "chain-main",
+        "rev": "7e7d49839283f6d77516f614c2e2ff7441771e5a",
+        "sha256": "1gm70jfd9rvi8shf6n7fjfvs4krdv3vjz50f44id3dv8fgg5zni1",
+        "type": "tarball",
+        "url": "https://github.com/crypto-org-chain/chain-main/archive/7e7d49839283f6d77516f614c2e2ff7441771e5a.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "cosmos-sdk": {
+        "branch": "v0.45.0",
+        "description": ":chains: A Framework for Building High Value Public Blockchains :sparkles:",
+        "homepage": "https://cosmos.network/",
+        "owner": "cosmos",
+        "repo": "cosmos-sdk",
+        "rev": "b6c77e6c819f8a51166649eaef125d1bfb276f04",
+        "sha256": "09ns4yfxyfi7c7n5g69zv32m1rdssdl48c1akmv1y2vz6ayz4v02",
+        "type": "tarball",
+        "url": "https://github.com/cosmos/cosmos-sdk/archive/b6c77e6c819f8a51166649eaef125d1bfb276f04.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "dapptools": {
+        "branch": "master",
+        "description": "Dapp, Seth, Hevm, and more",
+        "homepage": "https://dapp.tools",
+        "owner": "dapphub",
+        "repo": "dapptools",
+        "rev": "fb9476ded759da44c449eb391cc67bfb0df61112",
+        "sha256": "1aan8mq7mbj90hfblha92wynvxyckrlwsnq7av4mqms574fmq842",
+        "type": "tarball",
+        "url": "https://github.com/dapphub/dapptools/archive/refs/tags/hevm/0.49.0.tar.gz",
+        "url_template": "https://github.com/dapphub/dapptools/archive/refs/tags/hevm/0.49.0.tar.gz",
+        "version": "hevm/0.49.0"
+    },
+    "flake-compat": {
+        "branch": "master",
+        "description": null,
+        "homepage": null,
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "b4a34015c698c7793d592d66adbab377907a2be8",
+        "sha256": "1qc703yg0babixi6wshn5wm2kgl5y1drcswgszh4xxzbrwkk9sv7",
+        "type": "tarball",
+        "url": "https://github.com/edolstra/flake-compat/archive/b4a34015c698c7793d592d66adbab377907a2be8.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "gomod2nix": {
+        "branch": "master",
+        "description": "Convert applications using Go modules to Nix expressions",
+        "homepage": null,
+        "owner": "nix-community",
+        "repo": "gomod2nix",
+        "rev": "3cbf3a51fe32e2f57af4c52744e7228bab22983d",
+        "sha256": "11kn199nxcw6zspqawkrsfwv8wzx581wif3day160qlg11ya9di5",
+        "type": "tarball",
+        "url": "https://github.com/nix-community/gomod2nix/archive/3cbf3a51fe32e2f57af4c52744e7228bab22983d.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "gravity-bridge": {
+        "branch": "v2.0.0-elysium",
+        "description": "A CosmosSDK application for moving assets on and off of EVM based, POW chains",
+        "homepage": "",
+        "owner": "crypto-org-chain",
+        "repo": "gravity-bridge",
+        "rev": "d984b1562242efab5d7595d4108472ed27eba06f",
+        "sha256": "0q69yysg3ynq5wz98rvg1p8lav1xcrkkn32rxbqmpmffqqi7yv88",
+        "type": "tarball",
+        "url": "https://github.com/crypto-org-chain/gravity-bridge/archive/d984b1562242efab5d7595d4108472ed27eba06f.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "ibc-rs": {
+        "branch": "v1.4.0",
+        "description": "IBC modules and relayer - Formal specifications and Rust implementation",
+        "homepage": "",
+        "owner": "informalsystems",
+        "repo": "ibc-rs",
+        "rev": "daad02843a091bbdb3dd608e5f4ce790895c8845",
+        "sha256": "1n90sl5mcw4q6xri9k6rlhavxl43nxaza4ma9qwbhz2sh63sbh1l",
+        "type": "tarball",
+        "url": "https://github.com/informalsystems/ibc-rs/archive/daad02843a091bbdb3dd608e5f4ce790895c8845.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "niv": {
+        "branch": "master",
+        "description": "Easy dependency management for Nix projects",
+        "homepage": "https://github.com/nmattia/niv",
+        "owner": "nmattia",
+        "repo": "niv",
+        "rev": "e0ca65c81a2d7a4d82a189f1e23a48d59ad42070",
+        "sha256": "1pq9nh1d8nn3xvbdny8fafzw87mj7gsmp6pxkdl65w2g18rmcmzx",
+        "type": "tarball",
+        "url": "https://github.com/nmattia/niv/archive/e0ca65c81a2d7a4d82a189f1e23a48d59ad42070.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs": {
+        "branch": "master",
+        "description": "Nix Packages collection",
+        "homepage": "",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "90aa73fc8e1550b16d1ebdc436e48d9951f7989b",
+        "sha256": "0jh4npbcqjlszhnaz5mkziv5g1p5ig6wqp68yjxkjllsc7vhsrw6",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/90aa73fc8e1550b16d1ebdc436e48d9951f7989b.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

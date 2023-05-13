@@ -1,0 +1,18 @@
+#!/bin/sh
+make -C contracts
+cat contracts/out/dapp.sol.json | \
+    jq '.contracts."src/ModuleFRC20.sol".ModuleFRC20' | \
+    jq '{abi, bin: .evm.bytecode.object}' \
+    > x/elysium/types/contracts/ModuleFRC20.json
+cat contracts/out/dapp.sol.json | \
+    jq '.contracts."src/ModuleFRC21.sol".ModuleFRC21' | \
+    jq '{abi, bin: .evm.bytecode.object}' \
+    > x/elysium/types/contracts/ModuleFRC21.json
+cat contracts/out/dapp.sol.json | \
+    jq '.contracts."src/ModuleFRC20Proxy.sol".ModuleFRC20Proxy' | \
+    jq '{abi, bin: .evm.bytecode.object}' \
+    > x/elysium/types/contracts/ModuleFRC20Proxy.json
+cat contracts/out/dapp.sol.json | \
+    jq '.contracts."src/ModuleFRC20ProxyAuthority.sol".ModuleFRC20ProxyAuthority' | \
+    jq '{abi, bin: .evm.bytecode.object}' \
+    > x/elysium/types/contracts/ModuleFRC20ProxyAuthority.json
