@@ -221,7 +221,7 @@ def submit_proposal(cli, tmp_path, is_legacy, denom, conctract):
         )
     proposal = tmp_path / "proposal.json"
     # governance module account as signer
-    signer = "did:fury:e10d07y265gmmuvt4z0w9aw880jnsr700jdufnyd"
+    signer = "ely10d07y265gmmuvt4z0w9aw880jnsr700jdufnyd"
     proposal_src = {
         "messages": [
             {

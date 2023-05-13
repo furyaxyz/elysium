@@ -92,7 +92,7 @@ def prepare_gravity(custom_elysium, custom_geth):
         print("fund 0.1 eth to address", eth_addr)
         send_transaction(w3, {"to": eth_addr, "value": 10**17}, KEYS["validator"])
         acc_addr = gorc.show_cosmos_addr("elysium")
-        print("fund 100ely to address", acc_addr)
+        print("fund 100fury to address", acc_addr)
         rsp = custom_elysium.cosmos_cli().transfer(
             "community", acc_addr, "%dbasetely" % (100 * (10**18))
         )

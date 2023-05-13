@@ -7,7 +7,7 @@ import sdk "github.com/cosmos/cosmos-sdk/types"
 
 const (
 	// Bech32Prefix defines the Bech32 prefix used for Elysium Accounts
-	Bech32Prefix = "did:fury:te"
+	Bech32Prefix = "tely"
 
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 	Bech32PrefixAccAddr = Bech32Prefix

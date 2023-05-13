@@ -27,18 +27,18 @@ config {
     'start-flags': '--trace',
     'account-prefix': 'ely',
     'app-config': {
-      'minimum-gas-prices': '500baseely',
+      'minimum-gas-prices': '500basefury',
     },
     validators: [
       {
-        coins: '2234240000000000000ely',
-        staked: '10000000000000ely',
+        coins: '2234240000000000000fury',
+        staked: '10000000000000fury',
         mnemonic: '${VALIDATOR1_MNEMONIC}',
         base_port: 26800,
       },
       {
-        coins: '987870000000000000ely',
-        staked: '20000000000000ely',
+        coins: '987870000000000000fury',
+        staked: '20000000000000fury',
         mnemonic: '${VALIDATOR2_MNEMONIC}',
         base_port: 26810,
       },
@@ -46,17 +46,17 @@ config {
     accounts: [
       {
         name: 'community',
-        coins: '10000000000000ely',
+        coins: '10000000000000fury',
         mnemonic: '${COMMUNITY_MNEMONIC}',
       },
       {
         name: 'relayer',
-        coins: '10000000000000ely',
+        coins: '10000000000000fury',
         mnemonic: '${SIGNER1_MNEMONIC}',
       },
       {
         name: 'signer2',
-        coins: '10000000000000ely',
+        coins: '10000000000000fury',
         mnemonic: '${SIGNER2_MNEMONIC}',
       },
     ],

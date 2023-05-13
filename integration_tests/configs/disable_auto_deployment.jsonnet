@@ -18,7 +18,7 @@ config {
       app_state+: {
         elysium: {
           params: {
-            elysium_admin: 'did:fury:e12luku6uxehhak02py4rcz65zu0swh7wjsrw0pp',
+            elysium_admin: 'ely12luku6uxehhak02py4rcz65zu0swh7wjsrw0pp',
             enable_auto_deployment: false,
           },
         },

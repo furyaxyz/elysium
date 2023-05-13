@@ -84,8 +84,8 @@ func Test_validateIsAddress(t *testing.T) {
 		wantErr bool
 	}{
 		{"invalid address", args{"a"}, true},
-		{"invalid bech32 prefix", args{"tdid:fury:e12luku6uxehhak02py4rcz65zu0swh7wjsrw0pp"}, true},
-		{"correct bech32 address", args{"did:fury:e12luku6uxehhak02py4rcz65zu0swh7wjsrw0pp"}, false},
+		{"invalid bech32 prefix", args{"tely12luku6uxehhak02py4rcz65zu0swh7wjsrw0pp"}, true},
+		{"correct bech32 address", args{"ely12luku6uxehhak02py4rcz65zu0swh7wjsrw0pp"}, false},
 	}
 	for _, tt := range tests {
 		tt := tt

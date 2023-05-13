@@ -8,14 +8,14 @@ def test_gov_update_params(elysium, tmp_path):
 
     proposal = tmp_path / "proposal.json"
     # governance module account as signer
-    signer = "did:fury:e10d07y265gmmuvt4z0w9aw880jnsr700jdufnyd"
+    signer = "ely10d07y265gmmuvt4z0w9aw880jnsr700jdufnyd"
     proposal_src = {
         "messages": [
             {
                 "@type": "/elysium.MsgUpdateParams",
                 "authority": signer,
                 "params": {
-                    "elysium_admin": "did:fury:e12luku6uxehhak02py4rcz65zu0swh7wjsrw0pp",
+                    "elysium_admin": "ely12luku6uxehhak02py4rcz65zu0swh7wjsrw0pp",
                     "enable_auto_deployment": False,
                     "ibc_ely_denom": "ibc/6411AE2ADA1E73DB59DB151"
                     "A8988F9B7D5E7E233D8414DB6817F8F1A01600000",
@@ -34,7 +34,7 @@ def test_gov_update_params(elysium, tmp_path):
     rsp = cli.query_params()
     print("params", rsp)
     assert rsp == {
-        "elysium_admin": "did:fury:e12luku6uxehhak02py4rcz65zu0swh7wjsrw0pp",
+        "elysium_admin": "ely12luku6uxehhak02py4rcz65zu0swh7wjsrw0pp",
         "enable_auto_deployment": False,
         "ibc_ely_denom": "ibc/6411AE2ADA1E73DB59DB151"
         "A8988F9B7D5E7E233D8414DB6817F8F1A01600000",

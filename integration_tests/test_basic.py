@@ -144,8 +144,8 @@ def test_statesync(elysium):
 
     # do some transactions
     # DEPRECATED: Do a tx bank transaction
-    # from_addr = "did:fury:e1q04jewhxw4xxu3vlg3rc85240h9q7ns6hglz0g"
-    # to_addr = "did:fury:e16z0herz998946wr659lr84c8c556da55dc34hh"
+    # from_addr = "ely1q04jewhxw4xxu3vlg3rc85240h9q7ns6hglz0g"
+    # to_addr = "ely16z0herz998946wr659lr84c8c556da55dc34hh"
     # coins = "10basetely"
     # node = elysium.node_rpc(0)
     # txhash_0 = elysium.cosmos_cli(0).transfer(from_addr, to_addr, coins)["txhash"]
@@ -738,7 +738,7 @@ def test_replay_protection(elysium):
 def test_submit_any_proposal(elysium, tmp_path):
     # governance module account as granter
     cli = elysium.cosmos_cli()
-    granter_addr = "did:fury:e10d07y265gmmuvt4z0w9aw880jnsr700jdufnyd"
+    granter_addr = "ely10d07y265gmmuvt4z0w9aw880jnsr700jdufnyd"
     grantee_addr = cli.address("signer1")
 
     # this json can be obtained with `--generate-only` flag for respective cli calls
